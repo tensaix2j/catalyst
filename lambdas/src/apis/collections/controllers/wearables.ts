@@ -142,6 +142,8 @@ export async function getWearablesHandler(
 /**
  * This function will return a list of wearables that matches the given filters. It will check off-chain, L1 and L2 wearables.
  * The order will be off-chain > L1 > L2.
+ * 
+ * 
  */
 export async function getWearables(
   filters: ItemFilters,

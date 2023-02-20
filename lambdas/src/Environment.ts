@@ -30,6 +30,12 @@ export const DEFAULT_THIRD_PARTY_REGISTRY_SUBGRAPH_MATIC_MUMBAI =
 export const DEFAULT_THIRD_PARTY_REGISTRY_SUBGRAPH_MATIC_MAINNET =
   'https://api.thegraph.com/subgraphs/name/decentraland/tpr-matic-mainnet'
 
+export const DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_C =
+    'https://api.thegraph.com/subgraphs/name/tensaix2j/collections-avax_fuji'
+export const DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_FUJI =
+    'https://api.thegraph.com/subgraphs/name/tensaix2j/collections-avax_fuji'
+
+
 const DEFAULT_MAX_SYNCHRONIZATION_TIME = '15m'
 const DEFAULT_MAX_DEPLOYMENT_OBTENTION_TIME = '3s'
 
@@ -62,6 +68,7 @@ export class Environment {
   static async getInstance(): Promise<Environment> {
     if (!Environment.instance) {
       // Create default instance
+      console.log("JDEBUG: ","Environment.getInstance()", "new Environmentbuilder.build()")
       Environment.instance = await new EnvironmentBuilder().build()
     }
     return Environment.instance
@@ -107,7 +114,8 @@ export const enum EnvironmentConfig {
   OFF_CHAIN_WEARABLES_REFRESH_TIME,
   VALIDATE_API,
   PROFILES_CACHE_TTL,
-  COMMS_PROTOCOL
+  COMMS_PROTOCOL,
+  COLLECTIONS_L3_SUBGRAPH_URL
 }
 
 export class EnvironmentBuilder {
@@ -128,7 +136,12 @@ export class EnvironmentBuilder {
   }
 
   async build(): Promise<Environment> {
+
+    console.log("JDEBUG: ","EnvironmentBuilder.build()", "Enter")
+      
     const env = new Environment()
+
+    
 
     this.registerConfigIfNotAlreadySet(
       env,
@@ -142,11 +155,17 @@ export class EnvironmentBuilder {
       () => process.env.CONTENT_SERVER_ADDRESS
     )
 
+    console.log("JDEBUG: ","EnvironmentBuilder", "getCommsServerUrl");
+
+    
     const realCommsServerAddress = await getCommsServerUrl(
       EnvironmentBuilder.LOGGER,
       process.env.INTERNAL_COMMS_SERVER_ADDRESS ?? DEFAULT_INTERNAL_COMMS_SERVER_URL,
       process.env.COMMS_SERVER_ADDRESS
     )
+
+    console.log("JDEBUG: ","EnvironmentBuilder", "registerConfigIfNotAlreadySet");
+    
 
     this.registerConfigIfNotAlreadySet(env, EnvironmentConfig.COMMS_SERVER_ADDRESS, () => realCommsServerAddress)
 
@@ -178,6 +197,17 @@ export class EnvironmentBuilder {
           ? DEFAULT_COLLECTIONS_SUBGRAPH_MATIC_MAINNET
           : DEFAULT_COLLECTIONS_SUBGRAPH_MATIC_MUMBAI)
     )
+
+
+    this.registerConfigIfNotAlreadySet(
+        env,
+        EnvironmentConfig.COLLECTIONS_L3_SUBGRAPH_URL,
+        () =>
+          process.env.COLLECTIONS_L3_SUBGRAPH_URL ??
+          (process.env.ETH_NETWORK === 'mainnet'
+            ? DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_C
+            : DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_FUJI)
+      )
 
     this.registerConfigIfNotAlreadySet(
       env,

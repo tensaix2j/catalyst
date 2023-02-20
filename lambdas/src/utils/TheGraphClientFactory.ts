@@ -34,11 +34,17 @@ export class TheGraphClientFactory {
       baseComponents,
       env.getConfig(EnvironmentConfig.THIRD_PARTY_REGISTRY_L2_SUBGRAPH_URL)
     )
+
+    const avaxCollectionsSubgraph = await createSubgraphComponent(
+        baseComponents,
+        env.getConfig( EnvironmentConfig.COLLECTIONS_L3_SUBGRAPH_URL )
+    )
     return new TheGraphClient({
       collectionsSubgraph,
       maticCollectionsSubgraph,
       ensSubgraph,
-      thirdPartyRegistrySubgraph
+      thirdPartyRegistrySubgraph,
+      avaxCollectionsSubgraph
     })
   }
 }

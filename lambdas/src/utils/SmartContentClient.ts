@@ -15,7 +15,9 @@ import log4js from 'log4js'
  * If it can't, then it will try to contact it externally
  */
 export class SmartContentClient implements ContentAPI {
+  
   private static INTERNAL_CONTENT_SERVER_URL: string = `http://content-server:6969`
+  //private static INTERNAL_CONTENT_SERVER_URL: string = `https://labs.muadao.build`
   private static LOGGER = log4js.getLogger('SmartContentClient')
 
   private contentClient: IFuture<ContentAPI> | undefined
@@ -130,6 +132,7 @@ export class SmartContentClient implements ContentAPI {
       let contentClientUrl = this.externalContentServerUrl
       try {
         const fetcher = new Fetcher()
+        
         await fetcher.fetchJson(`${SmartContentClient.INTERNAL_CONTENT_SERVER_URL}/status`, {
           attempts: 6,
           waitTime: '10s'

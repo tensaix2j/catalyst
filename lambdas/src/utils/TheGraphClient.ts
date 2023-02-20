@@ -60,15 +60,18 @@ export class TheGraphClient {
     itemIdsToCheck: [EthAddress, string[]][],
     itemTypes: BlockchainItemType[]
   ): Promise<{ owner: EthAddress; urns: string[] }[]> {
-    const ethereumWearablesOwnersPromise = this.getOwnedItems(itemIdsToCheck, 'collectionsSubgraph', itemTypes)
-    const maticWearablesOwnersPromise = this.getOwnedItems(itemIdsToCheck, 'maticCollectionsSubgraph', itemTypes)
 
-    const [ethereumWearablesOwners, maticWearablesOwners] = await Promise.all([
+    const ethereumWearablesOwnersPromise    = this.getOwnedItems(itemIdsToCheck, 'collectionsSubgraph', itemTypes)
+    const maticWearablesOwnersPromise       = this.getOwnedItems(itemIdsToCheck, 'maticCollectionsSubgraph', itemTypes)
+    const avaxWearablesOwnersPromise        = this.getOwnedItems(itemIdsToCheck, 'avaxCollectionsSubgraph', itemTypes)
+
+    const [ethereumWearablesOwners, maticWearablesOwners , avaxWearablesOwners ] = await Promise.all([
       ethereumWearablesOwnersPromise,
-      maticWearablesOwnersPromise
+      maticWearablesOwnersPromise,
+      avaxWearablesOwnersPromise,
     ])
 
-    return this.concatItems(ethereumWearablesOwners, maticWearablesOwners)
+    return this.concatItems(ethereumWearablesOwners, maticWearablesOwners, avaxWearablesOwners)
   }
 
   private async getOwnedItems(
@@ -76,6 +79,10 @@ export class TheGraphClient {
     subgraph: keyof SubGraphs,
     itemTypes: BlockchainItemType[]
   ): Promise<{ owner: EthAddress; urns: string[] }[]> {
+
+    console.log("JDEBUG", "getOwnerItems", itemIdsToCheck, subgraph, itemTypes);
+    
+
     try {
       return this.getOwnersByItem(itemIdsToCheck, subgraph, itemTypes)
     } catch (error) {
@@ -136,9 +143,11 @@ export class TheGraphClient {
   public async getAllCollections(): Promise<{ name: string; urn: string }[]> {
     const l1CollectionsPromise = this.getCollections('collectionsSubgraph')
     const l2CollectionsPromise = this.getCollections('maticCollectionsSubgraph')
+    const l3CollectionsPromise = this.getCollections('avaxCollectionsSubgraph')
 
-    const [l1Collections, l2Collections] = await Promise.all([l1CollectionsPromise, l2CollectionsPromise])
-    return l1Collections.concat(l2Collections)
+    const [l1Collections, l2Collections, l3Collections ] = await Promise.all([l1CollectionsPromise, l2CollectionsPromise , l3CollectionsPromise])
+    return l1Collections.concat(l2Collections).concat(l3Collections)
+
   }
 
   private async getCollections(subgraph: keyof SubGraphs) {
@@ -157,7 +166,8 @@ export class TheGraphClient {
 
   private concatItems(
     ethereumItemsOwners: { owner: EthAddress; urns: string[] }[],
-    maticItemOwners: { owner: EthAddress; urns: string[] }[]
+    maticItemOwners: { owner: EthAddress; urns: string[] }[],
+    avaxItemOwners: { owner: EthAddress; urns: string[] }[]    
   ) {
     const allItems: Map<string, string[]> = new Map<string, string[]>()
 
@@ -165,6 +175,10 @@ export class TheGraphClient {
       allItems.set(a.owner, a.urns)
     })
     maticItemOwners.forEach((b) => {
+      const existingUrns = allItems.get(b.owner) ?? []
+      allItems.set(b.owner, existingUrns.concat(b.urns))
+    })
+    avaxItemOwners.forEach((b) => {
       const existingUrns = allItems.get(b.owner) ?? []
       allItems.set(b.owner, existingUrns.concat(b.urns))
     })
@@ -225,6 +239,7 @@ export class TheGraphClient {
     // Order will be L1 > L2
     const L1_NETWORKS = ['mainnet', 'ropsten', 'kovan', 'rinkeby', 'goerli']
     const L2_NETWORKS = ['matic', 'mumbai']
+    const L3_NETWORKS = ['avax_c' , 'avax_fuji']
     const wearableTypes: BlockchainItemType[] = ['wearable_v1', 'wearable_v2', 'smart_wearable_v1', 'emote_v1']
 
     let limit = pagination.limit
@@ -256,6 +271,16 @@ export class TheGraphClient {
       result.push(...l2Result)
     }
 
+    if (limit >= 0 && (!lastIdLayer || L3_NETWORKS.includes(lastIdLayer))) {
+        const l2Result = await this.findItemUrnsByFiltersInSubgraph(
+          'avaxCollectionsSubgraph',
+          { ...filters, lastId },
+          limit + 1,
+          wearableTypes
+        )
+        result.push(...l2Result)
+      }
+
     return result
   }
 
@@ -266,7 +291,7 @@ export class TheGraphClient {
     // Order will be L1 > L2
     const L1_NETWORKS = ['mainnet', 'kovan', 'rinkeby', 'goerli']
     const L2_NETWORKS = ['matic', 'mumbai']
-
+    const L3_NETWORKS = ['avax_c' , 'avax_fuji']
     let limit = pagination.limit
     let lastId = pagination.lastId
     let lastIdLayer: string | undefined = lastId ? await this.getProtocol(lastId) : undefined
@@ -295,6 +320,16 @@ export class TheGraphClient {
       )
       result.push(...l2Result)
     }
+
+    if (limit >= 0 && (!lastIdLayer || L3_NETWORKS.includes(lastIdLayer))) {
+        const l3Result = await this.findItemUrnsByFiltersInSubgraph(
+          'avaxCollectionsSubgraph',
+          { ...filters, lastId },
+          limit + 1,
+          EMOTE_TYPES
+        )
+        result.push(...l3Result)
+      }
 
     return result
   }
@@ -376,11 +411,13 @@ export class TheGraphClient {
     owner: EthAddress,
     itemTypes: BlockchainItemType[]
   ): Promise<(WearableId | EmoteId)[]> {
-    const ethereumWearablesPromise = this.getItemsByOwner('collectionsSubgraph', owner, itemTypes)
-    const maticWearablesPromise = this.getItemsByOwner('maticCollectionsSubgraph', owner, itemTypes)
-    const [ethereumWearables, maticWearables] = await Promise.all([ethereumWearablesPromise, maticWearablesPromise])
 
-    return ethereumWearables.concat(maticWearables)
+    const ethereumWearablesPromise  = this.getItemsByOwner('collectionsSubgraph', owner, itemTypes)
+    const maticWearablesPromise     = this.getItemsByOwner('maticCollectionsSubgraph', owner, itemTypes)
+    const avaxWearablesPromise      = this.getItemsByOwner('avaxCollectionsSubgraph', owner , itemTypes)
+    
+    const [ethereumWearables, maticWearables, avaxWearables ] = await Promise.all([ethereumWearablesPromise, maticWearablesPromise, avaxWearablesPromise])
+    return ethereumWearables.concat(maticWearables).concat( avaxWearables )
   }
 
   private async getItemsByOwner(subgraph: keyof SubGraphs, owner: string, itemTypes: BlockchainItemType[]) {
@@ -532,6 +569,7 @@ type SubGraphs = {
   collectionsSubgraph: ISubgraphComponent
   maticCollectionsSubgraph: ISubgraphComponent
   thirdPartyRegistrySubgraph: ISubgraphComponent
+  avaxCollectionsSubgraph: ISubgraphComponent
 }
 
 type BlockchainItemType = 'wearable_v1' | 'wearable_v2' | 'smart_wearable_v1' | 'emote_v1'
