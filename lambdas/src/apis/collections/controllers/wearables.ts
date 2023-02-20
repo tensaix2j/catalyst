@@ -201,7 +201,8 @@ async function fetchWearables(wearableUrns: string[], client: SmartContentClient
   if (wearableUrns.length === 0) {
     return []
   }
-
+  console.log("JDEBUG", "fetchWearables" );
+  
   const entities = await client.fetchEntitiesByPointers(wearableUrns)
   const wearables = entities
     .map((entity) => translateEntityIntoWearable(client, entity))

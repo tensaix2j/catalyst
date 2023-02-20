@@ -16,8 +16,9 @@ import log4js from 'log4js'
  */
 export class SmartContentClient implements ContentAPI {
   
-  private static INTERNAL_CONTENT_SERVER_URL: string = `http://content-server:6969`
-  //private static INTERNAL_CONTENT_SERVER_URL: string = `https://labs.muadao.build`
+  //private static INTERNAL_CONTENT_SERVER_URL: string = `http://content-server:6969`
+  private static INTERNAL_CONTENT_SERVER_URL: string = `https://labs.muadao.build/content`
+  
   private static LOGGER = log4js.getLogger('SmartContentClient')
 
   private contentClient: IFuture<ContentAPI> | undefined
@@ -130,15 +131,23 @@ export class SmartContentClient implements ContentAPI {
     if (!this.contentClient) {
       this.contentClient = future()
       let contentClientUrl = this.externalContentServerUrl
+     
+      console.log("JDEBUG", "getClient()", contentClientUrl ,"INTERNAL_CONTENT_SERVER_URL", SmartContentClient.INTERNAL_CONTENT_SERVER_URL );
+
       try {
+        
         const fetcher = new Fetcher()
         
-        await fetcher.fetchJson(`${SmartContentClient.INTERNAL_CONTENT_SERVER_URL}/status`, {
+        await fetcher.fetch(`${SmartContentClient.INTERNAL_CONTENT_SERVER_URL}/status`, {
           attempts: 6,
           waitTime: '10s'
         })
         SmartContentClient.LOGGER.info('Will use the internal content server url')
         contentClientUrl = SmartContentClient.INTERNAL_CONTENT_SERVER_URL
+        
+        console.log("JDEBUG", "OK");
+
+
       } catch {
         SmartContentClient.LOGGER.info('Defaulting to external content server url: ', contentClientUrl)
       }
