@@ -39,9 +39,10 @@ describe('Collection Utils', () => {
     expect(translatedContent.url).toEqual(`${EXTERNAL_URL}/contents/${CONTENT_HASH3}`)
   })
 
+  
   function assertAreEqualExceptProperties<Union, T extends Union, K extends Union>(
-    actual: T,
-    expected: K,
+    actual  ,
+    expected,
     ...propertiesToIgnore: (keyof (T & K))[]
   ) {
     expect(Object.keys(actual)).toEqual(Object.keys(expected))
@@ -51,6 +52,7 @@ describe('Collection Utils', () => {
       }
     }
   }
+  
 })
 
 function buildEntity(): Entity {

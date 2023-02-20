@@ -176,7 +176,8 @@ query itemsByOwner($owner: String, $item_types:[String], $first: Int, $start: St
       ensSubgraph: jest.fn() as any as ISubgraphComponent,
       collectionsSubgraph: { query: jest.fn() },
       maticCollectionsSubgraph: { query: jest.fn() },
-      thirdPartyRegistrySubgraph: jest.fn() as any as ISubgraphComponent
+      thirdPartyRegistrySubgraph: jest.fn() as any as ISubgraphComponent,
+      avaxCollectionsSubgraph: { query: jest.fn() }
     }
     subGraphs.collectionsSubgraph.query.mockResolvedValue({
       nfts: [

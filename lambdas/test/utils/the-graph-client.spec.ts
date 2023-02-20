@@ -7,7 +7,8 @@ describe('The Graph Client', () => {
       ensSubgraph: jest.fn() as any as ISubgraphComponent,
       collectionsSubgraph: { query: jest.fn() },
       maticCollectionsSubgraph: { query: jest.fn() },
-      thirdPartyRegistrySubgraph: jest.fn() as any as ISubgraphComponent
+      thirdPartyRegistrySubgraph: jest.fn() as any as ISubgraphComponent,
+      avaxCollectionsSubgraph: { query: jest.fn() }
     }
 
     subGraphs.collectionsSubgraph.query.mockResolvedValueOnce({
