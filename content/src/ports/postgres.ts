@@ -7,7 +7,7 @@ import { EnvironmentConfig } from '../Environment'
 import { AppComponents } from '../types'
 
 export interface DatabaseClient extends IDatabase {
-  queryWithValues<T>(sql: SQLStatement, durationQueryNameLabel?: string): Promise<IDatabase.IQueryResult<T>>
+  queryWithValues<T extends Record<string, any>>(sql: SQLStatement, durationQueryNameLabel?: string): Promise<IDatabase.IQueryResult<T>>
   streamQuery<T = any>(
     sql: SQLStatement,
     config?: { batchSize?: number },
@@ -46,6 +46,13 @@ export async function createDatabaseComponent(
   components: Pick<AppComponents, 'logs' | 'env' | 'metrics'>,
   options?: PoolConfig
 ): Promise<IDatabaseComponent> {
+
+    console.log("JDEBUG", "createDatabaseComponent" );
+
+    console.log("JDEBUG", "USER=" ,components.env.getConfig<string>(EnvironmentConfig.PSQL_USER) );
+    console.log("JDEBUG", "DB="   ,components.env.getConfig<string>(EnvironmentConfig.PSQL_DATABASE) );
+    
+
   const defaultOptions = {
     port: components.env.getConfig<number>(EnvironmentConfig.PSQL_PORT),
     host: components.env.getConfig<string>(EnvironmentConfig.PSQL_HOST),
@@ -89,14 +96,14 @@ export async function createDatabase(
     const queryClient = initializedClient ? initializedClient : pool
 
     return {
-      async query<T>(sql: string): Promise<IDatabase.IQueryResult<T>> {
+      async query<T extends Record<string, any>>(sql: string): Promise<IDatabase.IQueryResult<T>> {
         const rows = await queryClient.query<T[]>(sql)
         return {
           rows: rows.rows as any[],
           rowCount: rows.rowCount
         }
       },
-      async queryWithValues<T>(sql: SQLStatement, durationQueryNameLabel?: string): Promise<IDatabase.IQueryResult<T>> {
+      async queryWithValues<T extends Record<string, any>>(sql: SQLStatement, durationQueryNameLabel?: string): Promise<IDatabase.IQueryResult<T>> {
         const endTimer = startTimer(durationQueryNameLabel)
         try {
           const rows = await queryClient.query<T[]>(sql)
