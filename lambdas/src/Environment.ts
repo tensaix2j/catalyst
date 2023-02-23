@@ -308,10 +308,16 @@ export class EnvironmentBuilder {
 
     private newPoisProvider(ethNetwork: string) {
         if (ethNetwork === 'mainnet') {
+            /*
             return new HTTPProvider(
                 `https://rpc.decentraland.org/${encodeURIComponent('polygon')}?project=catalyst-lambdas`,
                 { fetch }
+            )*/
+            return new HTTPProvider(
+                `https://api.avax.network/ext/bc/C/rpc`,
+                { fetch }
             )
+
         }
         return new HTTPProvider(`https://rpc.decentraland.org/${encodeURIComponent('mumbai')}?project=catalyst-lambdas`, {
             fetch
