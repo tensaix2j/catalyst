@@ -35,32 +35,41 @@ const localChecks = async (
   components: Pick<AppComponents, 'metrics' | 'clock'>
 ): Promise<string | undefined> => {
   /** Validate that there are no newer deployments on the entity's pointers */
+  
   if (await serviceCalls.areThereNewerEntities(entity))
     return `There is a newer entity pointed by one or more of the pointers you provided (entityId=${
       entity.id
     } pointers=${entity.pointers.join(',')}).`
 
+
+
   /** Validate if the entity can be re deployed or not */
   if (await serviceCalls.isEntityDeployedAlready(entity))
     return `This entity was already deployed. You can't redeploy it`
 
+  
   /** Validate the deployment is not rate limited */
   if (await serviceCalls.isEntityRateLimited(entity)) {
     components.metrics.increment('dcl_content_rate_limited_deployments_total', { entity_type: entity.type })
     return `Entity rate limited (entityId=${entity.id} pointers=${entity.pointers.join(',')}).`
   }
 
+  
   /** Validate that the deployment is recent */
   if (await serviceCalls.isRequestTtlBackwards(entity))
     return `The request is not recent enough, please submit it again with a new timestamp (entityId=${
       entity.id
     } pointers=${entity.pointers.join(',')}).`
 
+
+  
   /** Validate that the deployment is not too far in the future */
   if (isRequestTtlForwards(components, entity))
     return `The request is too far in the future, please submit it again with a new timestamp (entityId=${
       entity.id
     } pointers=${entity.pointers.join(',')}).`
+
+  
 }
 
 /**
@@ -81,6 +90,8 @@ export const createServerValidator = (
   components: Pick<AppComponents, 'failedDeployments' | 'metrics' | 'clock'>
 ): ServerValidator => ({
   validate: async (entity, context, serviceCalls) => {
+
+    
     // these contexts doesn't validate anything in this side
     if (context === DeploymentContext.SYNCED || context === DeploymentContext.SYNCED_LEGACY_ENTITY) {
       return { ok: true }
@@ -108,7 +119,7 @@ export const createServerValidator = (
         return { ok: false, message: error }
       }
     }
-
+  
     return { ok: true }
   }
 })

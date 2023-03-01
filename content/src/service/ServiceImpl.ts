@@ -118,7 +118,13 @@ export class ServiceImpl implements MetaverseContentService {
         pointers: entity.pointers.join(' ')
       })
 
+      console.log("\n\n\n")
+      console.log("JDEBUG","ServiceImpl.ts", "deployEntity:121");
+
       const storeResult = await this.storeDeploymentInDatabase(entityId, entity, auditInfo, hashes, contextToDeploy)
+
+      console.log("JDEBUG","StoreDeploymentInDatabase Done.");
+
 
       if (!storeResult) {
         this.logger.error(`Error calling storeDeploymentInDatabase, returned void`, {
@@ -372,6 +378,8 @@ export class ServiceImpl implements MetaverseContentService {
         errors: [serverValidationResult.message]
       }
     }
+
+    
 
     return await this.components.validator.validate({
       // TODO: remove as any after fixing content validator

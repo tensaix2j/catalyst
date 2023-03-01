@@ -1,5 +1,5 @@
 import { IContentStorageComponent, IFileSystemComponent } from '@dcl/catalyst-storage'
-import { ExternalCalls, Validator } from '@dcl/content-validator'
+import { ExternalCalls, Validator } from '@mua_molecule/content-validator'
 import { EntityType, SyncDeployment } from '@dcl/schemas'
 import { IDeployerComponent, SynchronizerComponent } from '@dcl/snapshots-fetcher'
 import { IJobQueue } from '@dcl/snapshots-fetcher/dist/job-queue-port'

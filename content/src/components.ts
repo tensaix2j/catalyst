@@ -1,6 +1,6 @@
 import { createFolderBasedFileSystemContentStorage, createFsComponent } from '@dcl/catalyst-storage'
-import { createTheGraphClient } from '@dcl/content-validator'
-import { EntityType } from '@dcl/schemas'
+import { createTheGraphClient } from '@mua_molecule/content-validator'
+import { EntityType } from '@mua_molecule/schemas'
 import { createSynchronizer } from '@dcl/snapshots-fetcher'
 import { createJobQueue } from '@dcl/snapshots-fetcher/dist/job-queue-port'
 import { createConfigComponent } from '@well-known-components/env-config-provider'
@@ -46,6 +46,10 @@ import { createExternalCalls, createSubGraphsComponent, createValidator } from '
 import { AppComponents } from './types'
 
 export async function initComponentsWithEnv(env: Environment): Promise<AppComponents> {
+
+  console.log("\n\n\n\n");
+  console.log("JDEBUG", "initComponentsWithEnv");
+
   const clock = createClock()
   const metrics = createTestMetricsComponent(metricsDeclaration)
   const config = createConfigComponent({
@@ -86,6 +90,10 @@ export async function initComponentsWithEnv(env: Environment): Promise<AppCompon
     }
   )
   const daoClient = await DAOClientFactory.create(env, ethereumProvider)
+
+
+  console.log("JDEBUG", "component.ts", "initComponentsWithEnv", config , "\n\n\n");
+
   const authenticator = new ContentAuthenticator(
     ethereumProvider,
     env.getConfig(EnvironmentConfig.DECENTRALAND_ADDRESS)
@@ -287,6 +295,9 @@ export async function initComponentsWithEnv(env: Environment): Promise<AppCompon
   env.logConfigValues(logs.getLogger('Environment'))
 
   const server = new Server({ controller, metrics, env, logs, fs })
+
+  console.log("JDEBUG", "initComponentsWithEnv", "Returning...\n\n\n");
+
 
   return {
     env,

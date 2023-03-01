@@ -5,7 +5,7 @@ import {
   ExternalCalls,
   SubGraphs,
   Validator as IValidatorComponent
-} from '@dcl/content-validator'
+} from '@mua_molecule/content-validator'
 import { Authenticator } from '@dcl/crypto'
 import { createConfigComponent } from '@well-known-components/env-config-provider'
 import { IConfigComponent } from '@well-known-components/interfaces'
@@ -50,9 +50,25 @@ export async function createSubGraphsComponent(
         baseComponents,
         components.env.getConfig(EnvironmentConfig.THIRD_PARTY_REGISTRY_L2_SUBGRAPH_URL)
       )
+    },
+    L3: {
+        blocks: await createSubgraphComponent(
+            baseComponents,
+            components.env.getConfig(EnvironmentConfig.BLOCKS_L3_SUBGRAPH_URL )
+        ),
+        landManager: await createSubgraphComponent(
+            baseComponents,
+            components.env.getConfig(EnvironmentConfig.LAND_MANAGER_L3_SUBGRAPH_URL)
+        ),
+        collections: await createSubgraphComponent(
+            baseComponents,
+            components.env.getConfig(EnvironmentConfig.COLLECTIONS_L3_SUBGRAPH_URL)
+        ),
     }
+    
   }
 }
+
 
 export async function createExternalCalls(
   components: Pick<AppComponents, 'storage' | 'catalystFetcher' | 'authenticator' | 'env' | 'logs'>

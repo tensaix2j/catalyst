@@ -9,7 +9,7 @@ const DEFAULT_STORAGE_ROOT_FOLDER = 'storage'
 const DEFAULT_SERVER_PORT = 6969
 const DEFAULT_DENYLIST_FILE_NAME = 'denylist.txt'
 const DEFAULT_DENYLIST_URLS = 'https://config.decentraland.org/denylist'
-const DECENTRALAND_ADDRESS: EthAddress = '0x1337e0507eb4ab47e08a179573ed4533d9e22a7b'
+const DECENTRALAND_ADDRESS: EthAddress = '0xc9a332bcddcdecb3a6e4f6cdc18a5775651ca133'
 
 const DEFAULT_FOLDER_MIGRATION_MAX_CONCURRENCY = 1000
 export const DEFAULT_ENTITIES_CACHE_SIZE = 150000
@@ -40,6 +40,11 @@ export const DEFAULT_BLOCKS_SUBGRAPH_MATIC_MUMBAI =
   'https://api.thegraph.com/subgraphs/name/decentraland/blocks-matic-mumbai'
 export const DEFAULT_BLOCKS_SUBGRAPH_MATIC_MAINNET =
   'https://api.thegraph.com/subgraphs/name/decentraland/blocks-matic-mainnet'
+
+export const DEFAULT_LAND_MANAGER_SUBGRAPH_AVALANCHE    = 'https://api.thegraph.com/subgraphs/name/tensaix2j/land-manager-avax';
+export const DEFAULT_COLLECTIONS_SUBGRAPH_AVALANCHE     = 'https://api.thegraph.com/subgraphs/name/tensaix2j/collections-avax';
+export const DEFAULT_BLOCKS_SUBGRAPH_AVALANCHE          = 'https://api.thegraph.com/subgraphs/name/tensaix2j/blocks-avax';
+
 
 export const CURRENT_COMMIT_HASH = process.env.COMMIT_HASH ?? 'Unknown'
 export const CURRENT_CATALYST_VERSION = process.env.CATALYST_VERSION ?? 'Unknown'
@@ -142,7 +147,12 @@ export enum EnvironmentConfig {
 
   // List of entity types ignored during the synchronization
   SYNC_IGNORED_ENTITY_TYPES,
-  IGNORE_BLOCKCHAIN_ACCESS_CHECKS
+  IGNORE_BLOCKCHAIN_ACCESS_CHECKS,
+
+  COLLECTIONS_L3_SUBGRAPH_URL,
+  LAND_MANAGER_L3_SUBGRAPH_URL,
+  BLOCKS_L3_SUBGRAPH_URL
+      
 }
 export class EnvironmentBuilder {
   private baseEnv: Environment
@@ -274,6 +284,11 @@ export class EnvironmentBuilder {
           ? DEFAULT_COLLECTIONS_SUBGRAPH_MATIC_MAINNET
           : DEFAULT_COLLECTIONS_SUBGRAPH_MATIC_MUMBAI)
     )
+
+    this.registerConfigIfNotAlreadySet( env , EnvironmentConfig.COLLECTIONS_L3_SUBGRAPH_URL ,  ()=> DEFAULT_COLLECTIONS_SUBGRAPH_AVALANCHE );
+    this.registerConfigIfNotAlreadySet( env , EnvironmentConfig.LAND_MANAGER_L3_SUBGRAPH_URL , ()=> DEFAULT_LAND_MANAGER_SUBGRAPH_AVALANCHE );
+    this.registerConfigIfNotAlreadySet( env , EnvironmentConfig.BLOCKS_L3_SUBGRAPH_URL , ()=> DEFAULT_BLOCKS_SUBGRAPH_AVALANCHE );
+    
 
     this.registerConfigIfNotAlreadySet(
       env,
