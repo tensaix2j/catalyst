@@ -1,4 +1,4 @@
-import { Validator } from '@dcl/content-validator'
+import { Validator } from '@mua_molecule/content-validator'
 import { stub } from 'sinon'
 import { AppComponents } from '../../../../src/types'
 
