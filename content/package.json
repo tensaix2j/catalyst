@@ -19,7 +19,7 @@
     "test:unit": "jest --selectProjects unit --runInBand --forceExit --detectOpenHandles --coverage"
   },
   "dependencies": {
-    "@dcl/catalyst-api-specs": "^2.2.0",
+    "@dcl/catalyst-api-specs": "^2.2.1",
     "@dcl/catalyst-contracts": "^3.1.3",
     "@dcl/catalyst-storage": "^2.0.3",
     "@mua_molecule/content-validator": "^1.0.0",
