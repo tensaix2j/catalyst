@@ -14,12 +14,18 @@ export async function startSynchronization(
     | 'synchronizationState'
   >
 ) {
+
+  console.log("JDEBUG", "src/logic/synchronization.ts", "startSynchronization"  );
+      
   components.metrics.observe('dcl_content_server_sync_state', {}, 0)
   const syncJob = await components.synchronizer.syncWithServers(
     new Set(components.contentCluster.getAllServersInCluster())
   )
   const bootstrapFinished = future<void>()
   await syncJob.onInitialBootstrapFinished(async () => {
+    
+    console.log("JDEBUG", "src/logic/synchronization.ts", "onInitialBootstrapFinished"  );
+
     await components.downloadQueue.onIdle()
     await components.batchDeployer.onIdle()
     components.synchronizationState.toSyncing()

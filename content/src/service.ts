@@ -25,6 +25,10 @@ export async function main(program: Lifecycle.EntryPointParameters<AppComponents
   if (!disableSynchronization) {
     await startSynchronization(components)
   } else {
+    console.log("JDEBUG", "Sync disabled");
     components.metrics.observe('dcl_content_server_sync_state', {}, 1)
+
+    // JDEBUG added:
+    components.synchronizationState.toSyncing()
   }
 }
