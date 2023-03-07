@@ -8,7 +8,7 @@ export async function getCommsServerUrl(
 ): Promise<string> {
   try {
 
-    console.log( "JDEBUG: ","Utils:common.ts", "fetchJson", internalCommsServerUrl );
+    //console.log( "JDEBUG: ","Utils:common.ts", "fetchJson", internalCommsServerUrl );
 
     await fetchJson(`${internalCommsServerUrl}/status`, {
       attempts: 6,

@@ -117,7 +117,8 @@ export const enum EnvironmentConfig {
     VALIDATE_API,
     PROFILES_CACHE_TTL,
     COMMS_PROTOCOL,
-    COLLECTIONS_L3_SUBGRAPH_URL
+    COLLECTIONS_AVAX_SUBGRAPH_URL,
+    COLLECTIONS_FUJI_SUBGRAPH_URL    
 }
 
 export class EnvironmentBuilder {
@@ -201,13 +202,21 @@ export class EnvironmentBuilder {
 
         this.registerConfigIfNotAlreadySet(
             env,
-            EnvironmentConfig.COLLECTIONS_L3_SUBGRAPH_URL,
+            EnvironmentConfig.COLLECTIONS_AVAX_SUBGRAPH_URL,
             () =>
                 process.env.COLLECTIONS_L3_SUBGRAPH_URL ??
-                (process.env.ETH_NETWORK === 'mainnet'
-                    ? DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_C
-                    : DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_FUJI)
+                DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_C
         )
+
+        this.registerConfigIfNotAlreadySet(
+            env,
+            EnvironmentConfig.COLLECTIONS_FUJI_SUBGRAPH_URL,
+            () =>
+                process.env.COLLECTIONS_L4_SUBGRAPH_URL ??
+                DEFAULT_COLLECTIONS_SUBGRAPH_AVAX_FUJI
+        )
+
+
 
         this.registerConfigIfNotAlreadySet(
             env,

@@ -47,9 +47,11 @@ export async function getWearablesByOwner(
   thirdPartyCollectionId: string | undefined,
   owner: string
 ): Promise<{ urn: string; amount: number; definition?: LambdasWearable | undefined }[]> {
+    
   const ownedWearableUrns = thirdPartyCollectionId
     ? await findThirdPartyItemUrns(theGraphClient, thirdPartyFetcher, owner, thirdPartyCollectionId)
     : await theGraphClient.findWearableUrnsByOwner(owner)
+    
   return getWearablesByOwnerFromUrns(includeDefinitions, client, ownedWearableUrns)
 }
 
@@ -58,7 +60,11 @@ export async function getWearablesByOwnerFromUrns(
   client: SmartContentClient,
   wearableUrns: string[]
 ): Promise<{ urn: string; amount: number; definition?: LambdasWearable | undefined }[]> {
-  // Fetch definitions (if needed)
+  
+    // Fetch definitions (if needed)
+    //console.log("JDEBUG", "getWearablesByOwnerFromUrns", wearableUrns , "\n\n");
+      
+
   const wearables = includeDefinitions ? await fetchWearables(wearableUrns, client) : []
   const wearablesByUrn: Map<string, LambdasWearable> = new Map(
     wearables.map((wearable) => [wearable.id.toLowerCase(), wearable])
@@ -164,6 +170,7 @@ export async function getWearables(
     if (filters.itemIds && offChain.length < filters.itemIds.length) {
       // It looks like we do need to query the content server after all
       const onChainIds = filters.itemIds.filter((wearableId) => !isBaseAvatar(wearableId))
+
       onChain = await fetchWearables(onChainIds, client)
     }
 
@@ -186,6 +193,8 @@ export async function getWearables(
       filters.collectionIds[0] === BASE_AVATARS_COLLECTION_ID
 
     if (!onlyBaseAvatars) {
+
+      
       const onChainIds = await theGraphClient.findWearableUrnsByFilters(filters, { limit, lastId })
       const onChain = await fetchWearables(onChainIds, client)
       result.push(...onChain)
@@ -201,7 +210,7 @@ async function fetchWearables(wearableUrns: string[], client: SmartContentClient
   if (wearableUrns.length === 0) {
     return []
   }
-  console.log("JDEBUG", "fetchWearables" );
+  //console.log("JDEBUG", "fetchWearables" , wearableUrns , "\n\n");
   
   const entities = await client.fetchEntitiesByPointers(wearableUrns)
   const wearables = entities

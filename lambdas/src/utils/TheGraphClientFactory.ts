@@ -37,14 +37,22 @@ export class TheGraphClientFactory {
 
     const avaxCollectionsSubgraph = await createSubgraphComponent(
         baseComponents,
-        env.getConfig( EnvironmentConfig.COLLECTIONS_L3_SUBGRAPH_URL )
+        env.getConfig( EnvironmentConfig.COLLECTIONS_AVAX_SUBGRAPH_URL )
     )
+
+    const fujiCollectionsSubgraph = await createSubgraphComponent(
+        baseComponents,
+        env.getConfig( EnvironmentConfig.COLLECTIONS_FUJI_SUBGRAPH_URL )
+    )
+
+
     return new TheGraphClient({
       collectionsSubgraph,
       maticCollectionsSubgraph,
       ensSubgraph,
       thirdPartyRegistrySubgraph,
-      avaxCollectionsSubgraph
+      avaxCollectionsSubgraph,
+      fujiCollectionsSubgraph
     })
   }
 }
